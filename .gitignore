@@ -1,0 +1,13 @@
+# Generated evaluation material
+/runs/
+/outputs/
+/samples/
+/.cache/
+__pycache__/
+*.py[cod]
+
+# Local environments and credentials
+.venv/
+.venv-*/
+.env
+.env.*
