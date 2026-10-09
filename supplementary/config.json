@@ -1,0 +1,226 @@
+{
+  "assets_root": "D:/fab_insight",
+  "python": "{eval}/.venv-supplementary/Scripts/python.exe",
+  "llama_server": "{assets}/runtimes/llama.cpp/llama-server.exe",
+  "seed": 42,
+  "reserve": 0.2,
+  "budget_models": 3,
+  "port": 8080,
+  "server_ready_timeout": 300,
+  "server_args": {
+    "--host": "127.0.0.1",
+    "--gpu-layers": "all",
+    "--ctx-size": 32768,
+    "--parallel": 1,
+    "--batch-size": 1024,
+    "--ubatch-size": 256,
+    "--cache-type-k": "q8_0",
+    "--cache-type-v": "q8_0",
+    "--flash-attn": "on",
+    "--jinja": true,
+    "--no-context-shift": true,
+    "--fit": "off",
+    "--reasoning": "auto",
+    "--reasoning-format": "deepseek"
+  },
+  "models": [
+    {
+      "name": "qwen3_14b_q5_k_m",
+      "family": "qwen3",
+      "gguf": "{assets}/models/qwen3_14b_q5_k_m/Qwen3-14B-Q5_K_M.gguf",
+      "tokenizer": "{assets}/tokenizers/qwen3_14b",
+      "generation": {},
+      "dataset_overrides": {},
+      "server_args": {}
+    },
+    {
+      "name": "qwen38_27b_q4_k_m",
+      "family": "qwen38",
+      "gguf": "{assets}/models/qwen38_27b_q4_k_m/Qwen3.8-27B-Q4_K_M.gguf",
+      "tokenizer": "{assets}/tokenizers/qwen38_27b",
+      "generation": {},
+      "dataset_overrides": {},
+      "server_args": {}
+    },
+    {
+      "name": "qwen38_27b_ridge_37bpw",
+      "family": "qwen38",
+      "gguf": "{assets}/models/qwen38_27b_ridge_37bpw/Qwen3.8-27B-Ridge-3.7bpw.gguf",
+      "tokenizer": "{assets}/tokenizers/qwen38_27b",
+      "generation": {},
+      "dataset_overrides": {},
+      "server_args": {}
+    }
+  ],
+  "profiles": {
+    "official": {
+      "common": {
+        "top_k": 20,
+        "min_p": 0,
+        "repetition_penalty": 1,
+        "timeout": 1800,
+        "max_retries": 0,
+        "retries": 0,
+        "n": 1,
+        "stream": false
+      },
+      "families": {
+        "qwen3": {
+          "direct": {
+            "temperature": 0.7,
+            "top_p": 0.8,
+            "presence_penalty": 0
+          },
+          "thinking": {
+            "temperature": 0.6,
+            "top_p": 0.95,
+            "presence_penalty": 0
+          }
+        },
+        "qwen38": {
+          "direct": {
+            "temperature": 0.7,
+            "top_p": 0.8,
+            "presence_penalty": 1.5
+          },
+          "thinking": {
+            "temperature": 1,
+            "top_p": 0.95,
+            "presence_penalty": 0,
+            "reasoning_effort": "xhigh"
+          }
+        }
+      }
+    },
+    "fab_agent": {
+      "common": {
+        "top_k": 20,
+        "min_p": 0,
+        "repetition_penalty": 1,
+        "presence_penalty": 0,
+        "timeout": 1800,
+        "max_retries": 0,
+        "retries": 0,
+        "n": 1,
+        "stream": false
+      },
+      "families": {
+        "qwen3": {
+          "direct": {
+            "temperature": 0.1,
+            "top_p": 0.95
+          },
+          "thinking": {
+            "temperature": 0.6,
+            "top_p": 0.95
+          }
+        },
+        "qwen38": {
+          "direct": {
+            "temperature": 0.1,
+            "top_p": 0.95
+          },
+          "thinking": {
+            "temperature": 0.6,
+            "top_p": 0.95,
+            "reasoning_effort": "medium"
+          }
+        }
+      }
+    }
+  },
+  "ruler": {
+    "weight": 0.4,
+    "data_dir": "{assets}/datasets/ruler_generated",
+    "source_dir": "{assets}/frameworks/RULER",
+    "manifest": "{assets}/datasets/ruler_generated/generation_manifest.yaml",
+    "tasks": [
+      "niah_single_1",
+      "niah_single_2",
+      "niah_single_3",
+      "niah_multikey_1",
+      "niah_multikey_2",
+      "niah_multikey_3",
+      "niah_multivalue",
+      "niah_multiquery",
+      "vt",
+      "cwe",
+      "fwe",
+      "qa_1",
+      "qa_2"
+    ],
+    "lengths": [
+      16384,
+      32768
+    ],
+    "length_settings": {
+      "8192": {
+        "ctx_size": 16384,
+        "seconds_per_sample": 30
+      },
+      "16384": {
+        "ctx_size": 24576,
+        "seconds_per_sample": 60
+      },
+      "32768": {
+        "ctx_size": 40960,
+        "seconds_per_sample": 90
+      },
+      "65536": {
+        "ctx_size": 73728,
+        "seconds_per_sample": 180
+      }
+    },
+    "samples_per_cell": null,
+    "thinking": false,
+    "batch_size": 1,
+    "generation": {
+      "max_tokens": 512
+    },
+    "cell_overrides": {}
+  },
+  "bfcl": {
+    "weight": 0.6,
+    "embedding_path": "{assets}/models/all-MiniLM-L6-v2",
+    "categories": [
+      "simple_python",
+      "simple_java",
+      "simple_javascript",
+      "multiple",
+      "parallel",
+      "parallel_multiple",
+      "irrelevance",
+      "live_simple",
+      "live_multiple",
+      "live_parallel",
+      "live_parallel_multiple",
+      "live_irrelevance",
+      "live_relevance",
+      "multi_turn_base",
+      "multi_turn_miss_func",
+      "multi_turn_miss_param",
+      "multi_turn_long_context",
+      "memory_kv",
+      "memory_vector",
+      "memory_rec_sum",
+      "format_sensitivity"
+    ],
+    "samples_per_category": null,
+    "thinking": false,
+    "batch_size": 1,
+    "generation": {
+      "max_tokens": 2048
+    },
+    "seconds_per_sample": {
+      "single": 15,
+      "multi_turn": 120,
+      "memory_scenario": 900,
+      "format_base": 60
+    },
+    "category_overrides": {
+      "multi_turn_long_context": {
+        "ctx_size": 65536
+      }
+    }
+  }
+}
