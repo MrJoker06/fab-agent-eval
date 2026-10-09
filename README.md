@@ -384,6 +384,24 @@ python ./eval/eval_math500.py --model laptop_qwen35_08b_q4 --samples 5 --max-tok
 
 **当前项目尚未准备真实 CMMLU 数据，也没有这三个候选模型的 GGUF 文件。** 在 A10 机器填写实际文件路径并补齐数据后才能正式运行；当前机器的计划检查不需要这些文件。可先用 `-Datasets math_500,mmlu_pro,ifeval,ceval -CheckData` 检查已有四套数据。CMMLU 缺失时会留下错误日志，整轮不会报告通过。
 
+## Parquet 批量转 JSONL
+
+`parquet_to_jsonl.py` 递归遍历指定目录，将每个 `.parquet` 转成同名 `.jsonl`。保留原始字段、行序和相对目录结构，一行一条记录，使用 UTF-8 保存中文。按批读取，不需要一次把整个文件加载进内存。需要 `pyarrow`；现有评测环境已包含它，单独安装时执行 `python -m pip install pyarrow`。
+
+从项目根目录执行（已激活评测 Python 环境）：
+
+```powershell
+# 默认写在原文件旁；原 Parquet 文件保留。
+python ./eval/parquet_to_jsonl.py "D:/datasets/ceval"
+
+# 指定新位置，保留相对于源目录的文件结构。
+python ./eval/parquet_to_jsonl.py "D:/datasets/ceval" --output "D:/datasets/ceval_jsonl"
+```
+
+例如源文件 `D:/datasets/ceval/computer_network/val.parquet`，第二条命令会生成 `D:/datasets/ceval_jsonl/computer_network/val.jsonl`。`--output` 本身就是输出根目录，不会再额外嵌套一层 `ceval`。
+
+重复执行会覆盖同路径的 JSONL。文件名仅替换扩展名：`val-00000-of-00001.parquet` 会变成 `val-00000-of-00001.jsonl`，不会合并分片、改成 `val.jsonl` 或生成数据集加载配置。当前评测抽样代码读取 `<subset>/<split>.jsonl`，所以接入评测前需整理为它所需的文件名和目录。
+
 ## 查看结果与验证范围
 
 正式原生结果保存在 `eval/outputs/<profile>/<模型>/<项目>/<运行ID>/`，包括预测、逐题评分、实际 TaskConfig、JSON/HTML 报告、抽样清单和预算估算。独立 Python 使用 manual 目录。直接打开 `reports/report.html`，或启动可视化服务：
